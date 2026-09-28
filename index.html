@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Primech AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f7f8fa;
+            color: #222;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+            padding: 18px 20px;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        /* Bigger and more visible category dropdown */
+
+        .category-wrapper {
+            position: relative;
+        }
+
+        .category-select {
+            appearance: none;
+            -webkit-appearance: none;
+
+            background: #222;
+            color: white;
+
+            border: none;
+            border-radius: 10px;
+
+            padding: 12px 42px 12px 16px;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            cursor: pointer;
+            outline: none;
+
+            min-width: 130px;
+        }
+
+        .category-wrapper::after {
+            content: "⌄";
+            position: absolute;
+            right: 14px;
+            top: 9px;
+            color: white;
+            font-size: 17px;
+            pointer-events: none;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 35px 20px 60px;
+        }
+
+
+        /* =========================
+           WELCOME
+        ========================= */
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            font-weight: 600;
+            letter-spacing: -0.8px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #777;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           CATEGORY INDICATOR
+        ========================= */
+
+        .category-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .selection-count {
+            font-size: 13px;
+            color: #888;
+        }
+
+
+        /* =========================
+           ITEMS
+        ========================= */
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .item-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+
+            padding: 22px 12px;
+
+            text-align: center;
+            cursor: pointer;
+
+            transition: all 0.15s ease;
+
+            position: relative;
+
+            min-height: 130px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-card:active {
+            transform: scale(0.97);
+        }
+
+        .item-card.selected {
+            border: 2px solid #222;
+            background: #fafafa;
+        }
+
+        .item-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+
+        /* Checkbox */
+
+        .checkbox {
+            position: absolute;
+
+            top: 10px;
+            right: 10px;
+
+            width: 20px;
+            height: 20px;
+
+            border: 1px solid #d0d0d0;
+            border-radius: 5px;
+
+            background: white;
+        }
+
+        .item-card.selected .checkbox {
+            background: #222;
+            border-color: #222;
+        }
+
+        .item-card.selected .checkbox::after {
+            content: "✓";
+
+            color: white;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            position: absolute;
+
+            left: 4px;
+            top: 0px;
+        }
+
+
+        /* =========================
+           DELIVERY
+        ========================= */
+
+        .delivery-section {
+            background: white;
+
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+        }
+
+        .delivery-section label {
+            display: block;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            margin-bottom: 9px;
+        }
+
+        .office-select {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border: 1px solid #d8d8d8;
+            border-radius: 8px;
+
+            background: white;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        /* =========================
+           SUBMIT
+        ========================= */
+
+        .submit-btn {
+            width: 100%;
+
+            background: #222;
+            color: white;
+
+            border: none;
+
+            padding: 15px;
+
+            border-radius: 9px;
+
+            font-size: 15px;
+            font-weight: 500;
+
+            cursor: pointer;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+
+        /* =========================
+           CONFIRMATION
+        ========================= */
+
+        .confirmation {
+            display: none;
+
+            text-align: center;
+
+            padding: 45px 20px;
+
+            background: white;
+
+            border: 1px solid #e5e5e5;
+
+            border-radius: 12px;
+        }
+
+        .confirmation.show {
+            display: block;
+        }
+
+        .success-icon {
+            width: 65px;
+            height: 65px;
+
+            border-radius: 50%;
+
+            background: #e8f7ed;
+            color: #2e9d55;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 20px;
+
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        .confirmation h2 {
+            font-size: 23px;
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+        .confirmation p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .order-summary {
+            margin-top: 22px;
+
+            padding: 16px;
+
+            background: #f7f8fa;
+
+            border-radius: 8px;
+
+            color: #555;
+
+            font-size: 14px;
+
+            line-height: 1.8;
+
+            text-align: left;
+        }
+
+
+        /* =========================
+           DESKTOP
+        ========================= */
+
+        @media (min-width: 700px) {
+
+            header {
+                padding: 18px 40px;
+            }
+
+            main {
+                padding-top: 50px;
+            }
+
+            .items-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .submit-btn {
+                width: auto;
+                padding-left: 35px;
+                padding-right: 35px;
+                float: right;
+            }
+
+            .delivery-section {
+                clear: both;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <div class="header-content">
+
+        <div class="logo">
+            Office Refreshments
+        </div>
+
+        <div class="category-wrapper">
+
+            <select
+                class="category-select"
+                id="categorySelect"
+            >
+
+                <option value="snacks">
+                    🍿 Snacks
+                </option>
+
+                <option value="drinks">
+                    🥤 Drinks
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main>
+
+
+    <!-- WELCOME -->
+
+    <div class="welcome">
+
+        <h1>
+            Welcome!
+        </h1>
+
+        <p>
+            Choose your refreshments and we'll deliver them to you.
+        </p>
+
+    </div>
+
+
+
+    <!-- ORDER AREA -->
+
+    <div id="orderArea">
+
+
+        <!-- CATEGORY TITLE -->
+
+        <div class="category-heading">
+
+            <div
+                class="section-title"
+                id="sectionTitle"
+            >
+                Select your snacks
+            </div>
+
+            <div
+                class="selection-count"
+                id="selectionCount"
+            >
+                0 selected
+            </div>
+
+        </div>
+
+
+
+        <!-- ITEMS -->
+
+        <div
+            class="items-grid"
+            id="itemsGrid"
+        >
+        </div>
+
+
+
+        <!-- DELIVERY -->
+
+        <div class="delivery-section">
+
+            <label for="officeSelect">
+                Delivery Location
+            </label>
+
+            <select
+                class="office-select"
+                id="officeSelect"
+            >
+
+                <option value="">
+                    Select an office
+                </option>
+
+                <option value="Head Office">
+                    Head Office
+                </option>
+
+                <option value="Finance Office">
+                    Finance Office
+                </option>
+
+                <option value="HR Office">
+                    HR Office
+                </option>
+
+                <option value="Engineering Office">
+                    Engineering Office
+                </option>
+
+                <option value="Operations Office">
+                    Operations Office
+                </option>
+
+                <option value="Meeting Room">
+                    Meeting Room
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- SUBMIT -->
+
+        <button
+            class="submit-btn"
+            onclick="submitOrder()"
+        >
+            Submit Order
+        </button>
+
+
+    </div>
+
+
+
+    <!-- =========================
+         CONFIRMATION
+    ========================= -->
+
+    <div
+        class="confirmation"
+        id="confirmation"
+    >
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h2>
+            Order Submitted
+        </h2>
+
+        <p>
+            Your refreshments request has been successfully submitted.
+        </p>
+
+        <div
+            class="order-summary"
+            id="orderSummary"
+        >
+        </div>
+
+    </div>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =========================
+   MENU
+========================= */
+
+const menu = {
+
+    snacks: [
+
+        {
+            name: "Chips",
+            icon: "🥔"
+        },
+
+        {
+            name: "Cookies",
+            icon: "🍪"
+        },
+
+        {
+            name: "Chocolate",
+            icon: "🍫"
+        },
+
+        {
+            name: "Granola Bar",
+            icon: "🍫"
+        },
+
+        {
+            name: "Popcorn",
+            icon: "🍿"
+        },
+
+        {
+            name: "Crackers",
+            icon: "🥨"
+        },
+
+        {
+            name: "Donut",
+            icon: "🍩"
+        },
+
+        {
+            name: "Cake",
+            icon: "🍰"
+        }
+
+    ],
+
+
+    drinks: [
+
+        {
+            name: "Coffee",
+            icon: "☕"
+        },
+
+        {
+            name: "Tea",
+            icon: "🍵"
+        },
+
+        {
+            name: "Water",
+            icon: "💧"
+        },
+
+        {
+            name: "Orange Juice",
+            icon: "🍊"
+        },
+
+        {
+            name: "Apple Juice",
+            icon: "🧃"
+        },
+
+        {
+            name: "Soft Drink",
+            icon: "🥤"
+        },
+
+        {
+            name: "Milk",
+            icon: "🥛"
+        },
+
+        {
+            name: "Iced Tea",
+            icon: "🧋"
+        }
+
+    ]
+
+};
+
+
+
+/* =========================
+   IMPORTANT:
+   ONE SHARED ORDER
+========================= */
+
+let selectedItems = [];
+
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const categorySelect =
+    document.getElementById("categorySelect");
+
+const itemsGrid =
+    document.getElementById("itemsGrid");
+
+const sectionTitle =
+    document.getElementById("sectionTitle");
+
+const selectionCount =
+    document.getElementById("selectionCount");
+
+
+
+/* =========================
+   LOAD ITEMS
+========================= */
+
+function loadItems(category) {
+
+    itemsGrid.innerHTML = "";
+
+
+    sectionTitle.textContent =
+        category === "snacks"
+            ? "Select your snacks"
+            : "Select your drinks";
+
+
+    menu[category].forEach(item => {
+
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "item-card";
+
+
+        /*
+            Check whether this item
+            was already selected.
+
+            This is what allows snacks
+            and drinks to stay selected
+            when switching categories.
+        */
+
+        if (
+            selectedItems.some(
+                selected =>
+                    selected.name === item.name
+            )
+        ) {
+
+            card.classList.add("selected");
+
+        }
+
+
+        card.innerHTML = `
+
+            <div class="checkbox"></div>
+
+            <div class="item-icon">
+                ${item.icon}
+            </div>
+
+            <div class="item-name">
+                ${item.name}
+            </div>
+
+        `;
+
+
+        /* CLICK ITEM */
+
+        card.addEventListener(
+            "click",
+            function () {
+
+
+                const existingIndex =
+                    selectedItems.findIndex(
+                        selected =>
+                            selected.name === item.name
+                    );
+
+
+                /*
+                    If already selected,
+                    remove it.
+                */
+
+                if (existingIndex !== -1) {
+
+                    selectedItems.splice(
+                        existingIndex,
+                        1
+                    );
+
+                    card.classList.remove(
+                        "selected"
+                    );
+
+                }
+
+
+                /*
+                    Otherwise add it.
+                */
+
+                else {
+
+                    selectedItems.push({
+                        name: item.name,
+                        category: category
+                    });
+
+                    card.classList.add(
+                        "selected"
+                    );
+
+                }
+
+
+                updateSelectionCount();
+
+            }
+        );
+
+
+        itemsGrid.appendChild(card);
+
+    });
+
+
+    updateSelectionCount();
+
+}
+
+
+
+/* =========================
+   SELECTION COUNT
+========================= */
+
+function updateSelectionCount() {
+
+    const count =
+        selectedItems.length;
+
+
+    selectionCount.textContent =
+        count === 1
+            ? "1 selected"
+            : `${count} selected`;
+
+}
+
+
+
+/* =========================
+   CATEGORY CHANGE
+========================= */
+
+categorySelect.addEventListener(
+    "change",
+    function () {
+
+        loadItems(this.value);
+
+    }
+);
+
+
+
+/* =========================
+   SUBMIT
+========================= */
+
+function submitOrder() {
+
+
+    const office =
+        document.getElementById(
+            "officeSelect"
+        ).value;
+
+
+    /* No items */
+
+    if (
+        selectedItems.length === 0
+    ) {
+
+        alert(
+            "Please select at least one item."
+        );
+
+        return;
+
+    }
+
+
+    /* No location */
+
+    if (
+        office === ""
+    ) {
+
+        alert(
+            "Please select a delivery location."
+        );
+
+        return;
+
+    }
+
+
+    /*
+        Separate snacks and drinks
+        for a cleaner confirmation.
+    */
+
+    const snacks =
+        selectedItems
+            .filter(
+                item =>
+                    item.category === "snacks"
+            )
+            .map(
+                item =>
+                    item.name
+            );
+
+
+    const drinks =
+        selectedItems
+            .filter(
+                item =>
+                    item.category === "drinks"
+            )
+            .map(
+                item =>
+                    item.name
+            );
+
+
+    let summary = "";
+
+
+    if (snacks.length > 0) {
+
+        summary += `
+            <strong>Snacks:</strong>
+            ${snacks.join(", ")}
+            <br>
+        `;
+
+    }
+
+
+    if (drinks.length > 0) {
+
+        summary += `
+            <strong>Drinks:</strong>
+            ${drinks.join(", ")}
+            <br>
+        `;
+
+    }
+
+
+    summary += `
+        <strong>Delivery:</strong>
+        ${office}
+    `;
+
+
+    /* Hide order */
+
+    document.getElementById(
+        "orderArea"
+    ).style.display = "none";
+
+
+    /* Show confirmation */
+
+    const confirmation =
+        document.getElementById(
+            "confirmation"
+        );
+
+
+    confirmation.classList.add(
+        "show"
+    );
+
+
+    /* Insert summary */
+
+    document.getElementById(
+        "orderSummary"
+    ).innerHTML = summary;
+
+}
+
+
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+loadItems("snacks");
+
+</script>
+
+</body>
+</html>
