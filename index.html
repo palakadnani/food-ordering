@@ -155,7 +155,7 @@
             border: 1px solid #e5e5e5;
             border-radius: 12px;
 
-            padding: 22px 12px;
+            padding: 16px 12px;
 
             text-align: center;
             cursor: pointer;
@@ -169,7 +169,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
         }
 
         .item-card:active {
@@ -181,14 +181,35 @@
             background: #fafafa;
         }
 
-        .item-icon {
-            font-size: 40px;
+        .item-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
             margin-bottom: 10px;
+            border-radius: 8px;
+            background: white;
         }
 
         .item-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
+            line-height: 1.35;
+        }
+
+        /* Sub-heading inside a category, e.g. Coffee Machine / Vending Machine */
+
+        .group-title {
+            grid-column: 1 / -1;
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-top: 10px;
+        }
+
+        .group-title:first-child {
+            margin-top: 0;
         }
 
 
@@ -454,7 +475,7 @@
     <div class="welcome">
 
         <h1>
-            Welcome!
+            Welcome To Primech Cafe!
         </h1>
 
         <p>
@@ -604,95 +625,75 @@
    MENU
 ========================= */
 
+/*
+    Vending machine products come from
+    Vending_Machine/Vending_Menu_10-69.xlsx.
+    "slots" are the machine slot numbers that
+    stock the product (duplicates merged).
+
+    Coffee machine drinks have no slots; their
+    images live in Coffee_Machine/.
+*/
+
+const SNACK_IMG = "Vending_Machine/Vending_Product_Images/snacks/";
+const DRINK_IMG = "Vending_Machine/Vending_Product_Images/drinks/";
+const COFFEE_IMG = "Coffee_Machine/Coffee_Product_Images/";
+
 const menu = {
 
     snacks: [
-
-        {
-            name: "Chips",
-            icon: "🥔"
-        },
-
-        {
-            name: "Cookies",
-            icon: "🍪"
-        },
-
-        {
-            name: "Chocolate",
-            icon: "🍫"
-        },
-
-        {
-            name: "Granola Bar",
-            icon: "🍫"
-        },
-
-        {
-            name: "Popcorn",
-            icon: "🍿"
-        },
-
-        {
-            name: "Crackers",
-            icon: "🥨"
-        },
-
-        {
-            name: "Donut",
-            icon: "🍩"
-        },
-
-        {
-            name: "Cake",
-            icon: "🍰"
-        }
-
+        { name: "Fitto Chips - Spicy BBQ (15g)", image: SNACK_IMG + "Fitto_Chips_Spicy_BBQ.jpg", slots: [10] },
+        { name: "Wechips Whole Grain Snacks (21g)", image: SNACK_IMG + "WeChips_Whole_Grain.jpg", slots: [11] },
+        { name: "Fitto Onion Rings (15g)", image: SNACK_IMG + "Fitto_Onion_Rings.jpeg", slots: [12] },
+        { name: "Pocky Singapore - Strawberry (47g)", image: SNACK_IMG + "Pocky_Strawberry.jpg", slots: [13] },
+        { name: "Munch Bite Soft Dried Mango (40g)", image: SNACK_IMG + "Munch_Bite_Dried_Mango.jpeg", slots: [14] },
+        { name: "Munch Bite Almonds (40g)", image: SNACK_IMG + "Munch_Bite_Almond.jpeg", slots: [20] },
+        { name: "Munch Bite Roasted Salted Cashew (40g)", image: SNACK_IMG + "Munch_Bite_Cashew.jpeg", slots: [21] },
+        { name: "Munch Bite Pistachios (40g)", image: SNACK_IMG + "Munch_Bite_Pistachio.jpeg", slots: [22, 48] },
+        { name: "Munch Bite Mixed Nuts (25g)", image: SNACK_IMG + "Munch_Bite_Mixed_Nuts.jpeg", slots: [49] },
+        { name: "Obalab Pure 3 Triangle Cake (100g) - Chocolate", image: SNACK_IMG + "Obalab_Triangle_Cake_Chocolate.jpg", slots: [23] },
+        { name: "Tai Sun Peanuts (40g) - Roasted Peanut", image: SNACK_IMG + "Tai_Sun_Roasted_Peanuts.jpg", slots: [24] },
+        { name: "Julie's Peanut Sandwich (30g)", image: SNACK_IMG + "Julies_Peanut_Butter_Sandwich.jpg", slots: [30] },
+        { name: "Biscuit Packet - Chocolate (35g)", image: SNACK_IMG + "Hello_Panda_Chocolate.jpg", slots: [31] },
+        { name: "Lay's Stax (42g) - Sour Cream & Onion", image: SNACK_IMG + "Lays_Stax_Sour_Cream_Onion.jpg", slots: [32] },
+        { name: "Lay's Stax (42g) - Seaweed", image: SNACK_IMG + "Lays_Stax_Seaweed.jpg", slots: [33] },
+        { name: "Snickers (40g)", image: SNACK_IMG + "Snickers.jpg", slots: [34] },
+        { name: "Yan Yan Stick - Chocolate (50g)", image: SNACK_IMG + "Yan_Yan_Chocolate.jpg", slots: [35] },
+        { name: "Kit Kat 4F Chocolate (35g)", image: SNACK_IMG + "KitKat_4F_Chocolate.jpg", slots: [36] },
+        { name: "M&M Chocolate - Milk (45g)", image: SNACK_IMG + "MnMs_Milk_Chocolate.jpg", slots: [37] },
+        { name: "Muffin - Caramel (70g)", image: SNACK_IMG + "Muffin_Caramel.jpg", slots: [38] },
+        { name: "Muffin - Double Chocolate (70g)", image: SNACK_IMG + "Muffin_Double_Chocolate.jpg", slots: [39, 60] },
+        { name: "Muffin - Milk Chocolate (70g)", image: SNACK_IMG + "Muffin_Milk_Chocolate.jpg", slots: [61] },
+        { name: "Muffin - Blueberry (70g)", image: SNACK_IMG + "Muffin_Blueberry.jpg", slots: [62] }
     ],
 
-
     drinks: [
+        { group: "Coffee Machine", name: "Espresso", image: COFFEE_IMG + "Espresso.svg" },
+        { group: "Coffee Machine", name: "Americano", image: COFFEE_IMG + "Americano.svg" },
+        { group: "Coffee Machine", name: "Cappuccino", image: COFFEE_IMG + "Cappuccino.svg" },
+        { group: "Coffee Machine", name: "Latte", image: COFFEE_IMG + "Latte.svg" },
+        { group: "Coffee Machine", name: "Mocha", image: COFFEE_IMG + "Mocha.svg" },
+        { group: "Coffee Machine", name: "Hot Chocolate", image: COFFEE_IMG + "Hot_Chocolate.svg" },
+        { group: "Coffee Machine", name: "Soya Milk", image: COFFEE_IMG + "Soya_Milk.svg" },
+        { group: "Coffee Machine", name: "Soya Latte", image: COFFEE_IMG + "Soya_Latte.svg" },
+        { group: "Coffee Machine", name: "Matcha Latte", image: COFFEE_IMG + "Matcha_Latte.svg" },
+        { group: "Coffee Machine", name: "Choco Matcha", image: COFFEE_IMG + "Choco_Matcha.svg" },
+        { group: "Coffee Machine", name: "Dirty Matcha", image: COFFEE_IMG + "Dirty_Matcha.svg" },
+        { group: "Coffee Machine", name: "Mocha Matcha", image: COFFEE_IMG + "Mocha_Matcha.svg" },
+        { group: "Coffee Machine", name: "Soya Matcha", image: COFFEE_IMG + "Soya_Matcha.svg" },
 
-        {
-            name: "Coffee",
-            icon: "☕"
-        },
-
-        {
-            name: "Tea",
-            icon: "🍵"
-        },
-
-        {
-            name: "Water",
-            icon: "💧"
-        },
-
-        {
-            name: "Orange Juice",
-            icon: "🍊"
-        },
-
-        {
-            name: "Apple Juice",
-            icon: "🧃"
-        },
-
-        {
-            name: "Soft Drink",
-            icon: "🥤"
-        },
-
-        {
-            name: "Milk",
-            icon: "🥛"
-        },
-
-        {
-            name: "Iced Tea",
-            icon: "🧋"
-        }
-
+        { group: "Vending Machine", name: "Pink Dolphin (250ml) - Peach", image: DRINK_IMG + "Pink_Dolphin_Peach.jpg", slots: [40] },
+        { group: "Vending Machine", name: "Tetra Pack - Marigold Lemon Barley (250ml)", image: DRINK_IMG + "Marigold_Lemon_Barley.jpg", slots: [41] },
+        { group: "Vending Machine", name: "Tetra Pack - Marigold Lychee (250ml)", image: DRINK_IMG + "Marigold_Lychee.jpg", slots: [42] },
+        { group: "Vending Machine", name: "100% Fruit Juice - Tropical Fruits (200ml)", image: DRINK_IMG + "Marigold_100pct_Juice_Tropical.jpg", slots: [43, 44] },
+        { group: "Vending Machine", name: "Marigold UHT Full Cream Milk (200ml)", image: DRINK_IMG + "Marigold_UHT_Full_Cream_Milk.jpg", slots: [45, 46, 47] },
+        { group: "Vending Machine", name: "Justea White Grape Green Tea (250ml)", image: DRINK_IMG + "Justea_White_Grape_Green_Tea.jpg", slots: [50, 51] },
+        { group: "Vending Machine", name: "Yeos Tetra Pack (250ml) - Soy Bean Milk", image: DRINK_IMG + "Yeos_Soy_Bean_Milk.jpg", slots: [52, 53] },
+        { group: "Vending Machine", name: "Season Ice Lemon Tea (250ml)", image: DRINK_IMG + "Seasons_Ice_Lemon_Tea.jpg", slots: [54, 55] },
+        { group: "Vending Machine", name: "Milo Tetra Pack (200ml)", image: DRINK_IMG + "Milo_Tetra_Pack.jpg", slots: [56, 57, 58, 59] },
+        { group: "Vending Machine", name: "Pokka Peach Oolong Drink (250ml)", image: DRINK_IMG + "Pokka_Peach_Oolong.jpg", slots: [63] },
+        { group: "Vending Machine", name: "Pokka Jasmine Green Tea (250ml)", image: DRINK_IMG + "Pokka_Jasmine_Green_Tea.jpg", slots: [64, 65, 66] },
+        { group: "Vending Machine", name: "Pokka Oolong Tea (250ml)", image: DRINK_IMG + "Pokka_Oolong_Tea.jpg", slots: [67, 68, 69] }
     ]
 
 };
@@ -741,7 +742,30 @@ function loadItems(category) {
             : "Select your drinks";
 
 
+    let currentGroup = null;
+
+
     menu[category].forEach(item => {
+
+
+        /* Sub-heading whenever the group changes */
+
+        if (
+            item.group &&
+            item.group !== currentGroup
+        ) {
+
+            const heading =
+                document.createElement("div");
+
+            heading.className = "group-title";
+            heading.textContent = item.group;
+
+            itemsGrid.appendChild(heading);
+
+            currentGroup = item.group;
+
+        }
 
 
         const card =
@@ -777,9 +801,12 @@ function loadItems(category) {
 
             <div class="checkbox"></div>
 
-            <div class="item-icon">
-                ${item.icon}
-            </div>
+            <img
+                class="item-image"
+                src="${item.image}"
+                alt="${item.name}"
+                loading="lazy"
+            >
 
             <div class="item-name">
                 ${item.name}
