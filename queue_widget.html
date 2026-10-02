@@ -1,0 +1,133 @@
+<style>
+  #orderQueue { font-family: sans-serif; height: 100%; box-sizing: border-box; padding: 10px; overflow-y: auto; background: #f7f8fa; color: #222; }
+  #orderQueue * { box-sizing: border-box; }
+  #orderQueue .oq-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  #orderQueue .oq-title { font-size: 16px; font-weight: bold; }
+  #orderQueue .oq-count { font-size: 12px; color: #777; }
+  #orderQueue .oq-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  #orderQueue .oq-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; transition: opacity 0.3s, transform 0.3s; }
+  #orderQueue .oq-card.oq-leaving { opacity: 0; transform: scale(0.95); }
+  #orderQueue .oq-top { display: flex; justify-content: space-between; align-items: baseline; }
+  #orderQueue .oq-id { font-size: 15px; font-weight: bold; }
+  #orderQueue .oq-time { font-size: 11px; color: #777; text-align: right; }
+  #orderQueue .oq-wait { font-weight: bold; }
+  #orderQueue .oq-wait.oq-late { color: #d84315; }
+  #orderQueue .oq-office { font-size: 13px; background: #f0f2f5; border-radius: 6px; padding: 5px 8px; }
+  #orderQueue .oq-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  #orderQueue ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.5; }
+  #orderQueue .oq-done { margin-top: auto; border: none; border-radius: 8px; background: #2e7d32; color: #fff; padding: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
+  #orderQueue .oq-done:disabled { background: #9e9e9e; cursor: default; }
+  #orderQueue .oq-message { text-align: center; color: #777; padding: 30px 10px; font-size: 14px; }
+</style>
+
+<div id="orderQueue">
+  <div class="oq-header">
+    <div class="oq-title">Order Queue</div>
+    <div class="oq-count" id="oqCount"></div>
+  </div>
+  <div class="oq-grid" id="oqGrid"></div>
+  <div class="oq-message" id="oqMessage">Loading orders...</div>
+</div>
+
+<script>
+(function() {
+  const SERVER_URL = "http://localhost:5000/food";   // server.py
+  const LATE_MINUTES = 15;                      // wait time shown in orange after this
+
+  const grid = document.getElementById("oqGrid");
+  const message = document.getElementById("oqMessage");
+  const count = document.getElementById("oqCount");
+
+  const completing = {};   // ids being completed, so a refresh doesn't bring the card back
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function itemList(label, items) {
+    const box = el("div");
+    box.appendChild(el("div", "oq-label", label));
+    const list = el("ul");
+    items.forEach(function(name) { list.appendChild(el("li", null, name)); });
+    box.appendChild(list);
+    return box;
+  }
+
+  function buildCard(order) {
+    const placed = new Date(order.placed_at);
+    const waitMinutes = Math.floor((Date.now() - placed.getTime()) / 60000);
+
+    const card = el("div", "oq-card");
+
+    const top = el("div", "oq-top");
+    top.appendChild(el("div", "oq-id", order.id));
+    const time = el("div", "oq-time");
+    time.appendChild(el("div", null,
+      placed.toLocaleString("en-SG", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })));
+    time.appendChild(el("div", "oq-wait" + (waitMinutes >= LATE_MINUTES ? " oq-late" : ""),
+      waitMinutes < 1 ? "just now" : waitMinutes + " min ago"));
+    top.appendChild(time);
+    card.appendChild(top);
+
+    card.appendChild(el("div", "oq-office", "Deliver to: " + order.office));
+    if (order.snacks.length) card.appendChild(itemList("Snacks", order.snacks));
+    if (order.drinks.length) card.appendChild(itemList("Drinks", order.drinks));
+
+    const button = el("button", "oq-done", "Order Completed");
+    button.addEventListener("click", function() { complete(order.id, card, button); });
+    card.appendChild(button);
+
+    return card;
+  }
+
+  function render(orders) {
+    orders = orders.filter(function(o) { return !completing[o.id]; });
+    grid.innerHTML = "";
+    orders.forEach(function(order) { grid.appendChild(buildCard(order)); });
+    count.textContent = orders.length === 1 ? "1 order" : orders.length + " orders";
+    message.textContent = orders.length ? "" : "No orders in the queue";
+    message.style.display = orders.length ? "none" : "block";
+  }
+
+  function complete(id, card, button) {
+    button.disabled = true;
+    button.textContent = "Completing...";
+    completing[id] = true;
+
+    fetch(SERVER_URL + "/orders/" + encodeURIComponent(id) + "/complete", { method: "POST" })
+      .then(function(res) {
+        // 404 = already completed (e.g. from another screen), so remove it too
+        if (!res.ok && res.status !== 404) throw new Error("Server returned " + res.status);
+        card.classList.add("oq-leaving");
+        setTimeout(refresh, 300);
+      })
+      .catch(function() {
+        delete completing[id];
+        button.disabled = false;
+        button.textContent = "Order Completed";
+        alert("Could not complete " + id + ". Is the order server running?");
+      });
+  }
+
+  function refresh() {
+    fetch(SERVER_URL + "/orders")
+      .then(function(res) {
+        if (!res.ok) throw new Error("Server returned " + res.status);
+        return res.json();
+      })
+      .then(render)
+      .catch(function() {
+        grid.innerHTML = "";
+        count.textContent = "";
+        message.style.display = "block";
+        message.textContent = "Order server offline";
+      });
+  }
+
+  refresh();
+  setInterval(refresh, 3000);
+})();
+</script>

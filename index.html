@@ -370,6 +370,28 @@
             font-size: 14px;
         }
 
+        .order-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+
+            margin-top: 22px;
+        }
+
+        .order-meta span {
+            display: block;
+
+            font-size: 12px;
+            color: #888;
+
+            margin-bottom: 3px;
+        }
+
+        .order-meta strong {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
         .order-summary {
             margin-top: 22px;
 
@@ -605,6 +627,20 @@
             Your refreshments request has been successfully submitted.
         </p>
 
+        <div class="order-meta">
+
+            <div>
+                <span>Order ID</span>
+                <strong id="orderId"></strong>
+            </div>
+
+            <div>
+                <span>Placed At</span>
+                <strong id="orderPlacedAt"></strong>
+            </div>
+
+        </div>
+
         <div
             class="order-summary"
             id="orderSummary"
@@ -650,7 +686,6 @@ const menu = {
         { name: "Munch Bite Almonds (40g)", image: SNACK_IMG + "Munch_Bite_Almond.jpeg", slots: [20] },
         { name: "Munch Bite Roasted Salted Cashew (40g)", image: SNACK_IMG + "Munch_Bite_Cashew.jpeg", slots: [21] },
         { name: "Munch Bite Pistachios (40g)", image: SNACK_IMG + "Munch_Bite_Pistachio.jpeg", slots: [22, 48] },
-        { name: "Munch Bite Mixed Nuts (25g)", image: SNACK_IMG + "Munch_Bite_Mixed_Nuts.jpeg", slots: [49] },
         { name: "Obalab Pure 3 Triangle Cake (100g) - Chocolate", image: SNACK_IMG + "Obalab_Triangle_Cake_Chocolate.jpg", slots: [23] },
         { name: "Tai Sun Peanuts (40g) - Roasted Peanut", image: SNACK_IMG + "Tai_Sun_Roasted_Peanuts.jpg", slots: [24] },
         { name: "Julie's Peanut Sandwich (30g)", image: SNACK_IMG + "Julies_Peanut_Butter_Sandwich.jpg", slots: [30] },
@@ -697,6 +732,19 @@ const menu = {
     ]
 
 };
+
+
+
+/* =========================
+   ORDER SERVER
+========================= */
+
+/*
+    server.py serves this page at /food/,
+    so this resolves to /food/orders.
+*/
+
+const ORDERS_URL = "orders";
 
 
 
@@ -1018,6 +1066,78 @@ function submitOrder() {
         <strong>Delivery:</strong>
         ${office}
     `;
+
+
+    /*
+        Send the order to server.py,
+        which queues it for the ThingsBoard
+        queue widget and gives back its
+        order ID and placed time.
+    */
+
+    const submitBtn =
+        document.querySelector(".submit-btn");
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+
+    fetch(ORDERS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ snacks, drinks, office })
+    })
+        .then(res => {
+
+            if (!res.ok) {
+                throw new Error("Server returned " + res.status);
+            }
+
+            return res.json();
+
+        })
+        .then(order => {
+
+            showConfirmation(order, summary);
+
+        })
+        .catch(() => {
+
+            alert(
+                "Sorry, your order could not be sent. " +
+                "Please check you are on the office Wi-Fi and try again."
+            );
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Order";
+
+        });
+
+}
+
+
+
+/* =========================
+   CONFIRMATION
+========================= */
+
+function showConfirmation(order, summary) {
+
+
+    document.getElementById(
+        "orderId"
+    ).textContent = order.id;
+
+
+    document.getElementById(
+        "orderPlacedAt"
+    ).textContent =
+        new Date(order.placed_at).toLocaleString("en-SG", {
+            day: "numeric",
+            month: "short",
+            hour: "numeric",
+            minute: "2-digit"
+        });
 
 
     /* Hide order */
